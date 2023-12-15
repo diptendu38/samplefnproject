@@ -1,21 +1,27 @@
 from fdk import response
-import json
-import io
-from Request import construct_request  
+import logging 
+_response = {"status":"error"}
 
-def handler(ctx, data: io.BytesIO=None):
+def handler(ctx, data: io.BytesIO = None):
+    
+    logging.getLogger().info("This is a test messege for debugging purpose")
+    global _response
+    
+    name = "World"
+    
     try:
-        body = json.loads(data.getvalue())
-        Response_to_oic = construct_request(body)
+        # Converting the input data from bytes to string format
+        token = data.getvalue().decode('utf-8')
+        logging.getLogger().info(token)
+        _response = token
+    # Handling any exceptions or errors during the execution
     except (Exception, ValueError) as ex:
-        return response.Response(
-            ctx, response_data=json.dumps(
-                {"message": f"Error: {str(ex)}"}),
-            headers={"Content-Type": "application/json"},
-            status=500  
-        )
+        logging.getLogger().info('error parsing json payload: ' + str(ex))
 
+    logging.getLogger().info("Inside Python Hello World function")
+    
+    
     return response.Response(
-        ctx, response_data=json.dumps(Response_to_oic),
-        headers={"Content-Type": "application/json"}
+        ctx, _response,             
+        
     )
