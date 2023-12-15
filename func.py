@@ -1,4 +1,5 @@
 from fdk import response
+import io
 import logging 
 _response = {"status":"error"}
 
@@ -22,6 +23,5 @@ def handler(ctx, data: io.BytesIO = None):
     
     
     return response.Response(
-        ctx, _response,             
-        
+        ctx, _response          
     )

@@ -1,2 +1,4 @@
 fdk>=0.1.50
 requests
+oci
+io
