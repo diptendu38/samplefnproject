@@ -10,12 +10,13 @@ def handler(ctx, data: dict = None):
         result = {"Full Name": full_name}
     except Exception as e:
         return response.Response(
-            ctx, response_data=json.dumps({"error": str(e)}),
+            response_data=json.dumps({"error": str(e)}),
             headers={"Content-Type": "application/json"},
-            status=500
+            status_code=500
         )
 
     return response.Response(
-        ctx, response_data=json.dumps(result),
-        headers={"Content-Type": "application/json"}
+        response_data=json.dumps(result),
+        headers={"Content-Type": "application/json"},
+        status_code=200
     )
