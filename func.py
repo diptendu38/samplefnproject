@@ -1,27 +1,21 @@
+import json
 from fdk import response
-import io
-import logging 
-_response = {"status":"error"}
 
-def handler(ctx, data: io.BytesIO = None):
-    
-    logging.getLogger().info("This is a test messege for debugging purpose")
-    global _response
-    
-    name = "World"
-    
+def handler(ctx, data: dict = None):
     try:
-        # Converting the input data from bytes to string format
-        token = data.getvalue().decode('utf-8')
-        logging.getLogger().info(token)
-        _response = token
-    # Handling any exceptions or errors during the execution
-    except (Exception, ValueError) as ex:
-        logging.getLogger().info('error parsing json payload: ' + str(ex))
+        name = data.get("Name", "")
+        last = data.get("Last", "")
+        full_name = f"{name} {last}"
 
-    logging.getLogger().info("Inside Python Hello World function")
-    
-    
+        result = {"Full Name": full_name}
+    except Exception as e:
+        return response.Response(
+            ctx, response_data=json.dumps({"error": str(e)}),
+            headers={"Content-Type": "application/json"},
+            status=500
+        )
+
     return response.Response(
-        ctx, _response          
+        ctx, response_data=json.dumps(result),
+        headers={"Content-Type": "application/json"}
     )
