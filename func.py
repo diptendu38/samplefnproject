@@ -33,14 +33,21 @@ def handler(ctx, data: io.BytesIO=None):
     name = "World"
     try:
         body = json.loads(data.getvalue())
-        name = body.get("name")
+        name = body.get("Name")
+        last = body.get("Last")
+        full_name = f"{name} {last}"
+        result = {"Full Name": full_name}
     except (Exception, ValueError) as ex:
-        print(str(ex), flush=True)
+            return response.Response(
+            response_data=json.dumps({"error": str(e)}),
+            headers={"Content-Type": "application/json"}
+        )
 
     print("Vale of name = ", name, flush=True)
     print("Exiting Python Hello World handler", flush=True)
+       
     return response.Response(
-        ctx, response_data=json.dumps(
-            {"message": "Hello {0}".format(name)}),
-        headers={"Content-Type": "application/json"}
+        ctx, response_data=json.dumps(result),
+        headers={"Content-Type": "application/json"},
     )
+
