@@ -118,6 +118,10 @@ def get_binary_secret_into_file(secret_ocid, filepath):
         with open(filepath, 'wb') as secretfile:
             decrypted_secret_content = base64.decodebytes(secret_content)
             secretfile.write(decrypted_secret_content)
+        with open('/tmp/secret', 'rb') as file:
+            content = file.read()
+            print(content)
+            
     except Exception as ex:
         print("ERROR: cannot write to file " + filepath, ex, flush=True)
         raise
