@@ -1,4 +1,4 @@
-oci==2.51.0
-cryptography==3.4.8
-PyJWT==2.2.0
-fdk==0.1.10
+oci
+cryptography
+PyJWT
+fdk
