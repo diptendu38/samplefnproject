@@ -1,5 +1,5 @@
 schema_version: 20180708
-name: hdfc_apigee
+name: key_fetching_test
 version: 1.0.3
 runtime: python3.8
 build_image: fnproject/python:3.9-dev
