@@ -63,7 +63,7 @@ def fetch_secret_from_vault(secret_ocid):
 
     return secret_content
 
-def handle(ctx, data: bytes = None):
+def handler(ctx, data: bytes = None):
     # Replace 'your_secret_ocid' with the actual OCID of your secret in OCI Vault
     secret_ocid = 'ocid1.vaultsecret.oc1.ap-mumbai-1.amaaaaaampahd3ianjpywinnvcdy5se5kidb25wsheuw5j5ddjznqvuvy6qq'
 
