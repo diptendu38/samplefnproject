@@ -82,7 +82,7 @@ def handler(ctx, data: bytes = None):
         print(f"Error fetching secret from OCI Vault: {e}")
         return f"Error fetching secret from OCI Vault: {e}"
 '''
-
+'''
 import io
 import json
 import base64
@@ -121,7 +121,7 @@ def get_binary_secret_into_file(secret_ocid, filepath):
         with open('/tmp/secret', 'rb') as file:
             content = file.read()
             print(content)
-            
+
     except Exception as ex:
         print("ERROR: cannot write to file " + filepath, ex, flush=True)
         raise
@@ -156,5 +156,75 @@ def handler(ctx, data: io.BytesIO=None):
         response_data=resp,
         headers={"Content-Type": "application/json"}
     )
+    '''
+import io
+import json
+import base64
+import oci
+import jwt
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from fdk import response
+
+def read_key_from_vault(key_ocid):
+    # Assuming the key is stored as a text secret in OCI Vault
+    signer = oci.auth.signers.get_resource_principals_signer()
+    try:
+        client = oci.secrets.SecretsClient({}, signer=signer)
+        key_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content.encode('utf-8')
+        key_bytes = base64.b64decode(key_content)
+    except Exception as ex:
+        print("ERROR: failed to retrieve the key from the vault", ex, flush=True)
+        raise
+    return key_bytes
+
+def jwt_signature(raw_data, private_key_ocid):
+    private_key_bytes = read_key_from_vault(private_key_ocid)
+    #public_key_bytes = read_key_from_vault(public_key_ocid)
+
+    private_key = serialization.load_pem_private_key(
+        private_key_bytes,
+        password=None,
+        backend=default_backend()
+    )
+
+
+    header = {
+        'alg': 'RS256',
+        'typ': 'JWT'
+    }
+
+    jwt_token = jwt.encode(raw_data, private_key, algorithm='RS256', headers=header)
+
+    print(f"\nDigitally Signed JWT: {jwt_token}")
+    return jwt_token
+
+def handler(ctx, data: io.BytesIO=None):
+    logging.getLogger().info("function start")
+
+    private_key_ocid = public_key_ocid = ""
+    try:
+        cfg = dict(ctx.Config())
+        private_key_ocid = cfg["private_key_ocid"]
+        logging.getLogger().info("Private Key OCID = " + private_key_ocid)
+        #public_key_ocid = cfg["public_key_ocid"]
+        #logging.getLogger().info("Public Key OCID = " + public_key_ocid)
+    except Exception as e:
+        print('ERROR: Missing configuration keys, private_key_ocid and public_key_ocid', e, flush=True)
+        raise
+
+    raw_data = {
+        "BENE_ACC_NAME": "4272001002014063"
+    }
+
+    jwt_token = jwt_signature(raw_data, private_key_ocid)
+
+    logging.getLogger().info("function end")
+    return response.Response(
+        ctx, 
+        response_data={"jwt_token": jwt_token},
+        headers={"Content-Type": "application/json"}
+    )
+
 
 
