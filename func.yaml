@@ -8,5 +8,5 @@ entrypoint: /python/bin/fdk /function/func.py handler
 memory: 256
 config:
   client_private_key_ocid: "ocid1.vaultsecret.oc1.ap-mumbai-1.amaaaaaampahd3iacsnzalix2vufk2jhpnt4rumz62ouxdunf7eg57un4c2q"
-  client_public_key_ocid:  "ocid1.vaultsecret.oc1.ap-mumbai-1.amaaaaaampahd3ianjpywinnvcdy5se5kidb25wsheuw5j5ddjznqvuvy6qq"
-  server_public_key_ocid:  "ocid1.vaultsecret.oc1.ap-mumbai-1.amaaaaaampahd3iao4m2hyty6tvd3d23tiag3iizsre3rekyhvp6tkrpytca"
+  client_public_key_ocid: "ocid1.vaultsecret.oc1.ap-mumbai-1.amaaaaaampahd3ianjpywinnvcdy5se5kidb25wsheuw5j5ddjznqvuvy6qq"
+  server_public_key_ocid: "ocid1.vaultsecret.oc1.ap-mumbai-1.amaaaaaampahd3iao4m2hyty6tvd3d23tiag3iizsre3rekyhvp6tkrpytca"
