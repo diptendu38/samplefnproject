@@ -2,3 +2,4 @@ oci
 cryptography
 PyJWT
 fdk
+pycryptodome
