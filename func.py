@@ -1,4 +1,3 @@
-
 import io
 import SymmetricDecrypt, Decrypt
 import json
@@ -19,7 +18,7 @@ def create_json_payload(resquest_signature_encrypted_value, symmetric_key_encryp
 def handler(ctx, data: io.BytesIO=None):
     logging.getLogger().info("function start")
 
-    client_private_key_ocid = client_public_key_ocid = server_public_key_ocid = server_private_key_ocid= ""
+    client_private_key_ocid = client_public_key_ocid = server_public_key_ocid = server_private_key_ocid = ""
     try:
         body = json.loads(data.getvalue())
         cfg = dict(ctx.Config())
@@ -62,6 +61,7 @@ def handler(ctx, data: io.BytesIO=None):
         ResponseSignatureEncryptedValue = payload.get("ResponseSignatureEncryptedValue", "")
 
         AES_key = SymmetricDecrypt.key_decryption_logic(GWSymmetricKeyEncryptedValue,server_private_key_ocid)
+        logging.getLogger().info("AES Key = " + AES_key)
         response_signature_decrypted_value_obj = Decrypt.Decryptor()
         json_response = response_signature_decrypted_value_obj.generate_response_signature_decrypted_value(AES_key, ResponseSignatureEncryptedValue,client_public_key_ocid)
     else :

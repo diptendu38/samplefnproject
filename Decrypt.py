@@ -41,9 +41,8 @@ class Decryptor:
             print("Decryption failed.")
 
         public_key_bytes = Decryptor.read_key_from_vault(public_key_ocid)
-        public_key = serialization.load_pem_private_key(
+        public_key = serialization.load_pem_public_key(
         public_key_bytes,
-        password=None,
         backend=default_backend()
     )
         try:
