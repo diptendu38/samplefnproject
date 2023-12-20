@@ -5,7 +5,6 @@ import base64
 import oci
 
 def read_key_from_vault(key_ocid):
-    # Assuming the key is stored as a text secret in OCI Vault
     signer = oci.auth.signers.get_resource_principals_signer()
     try:
         client = oci.secrets.SecretsClient({}, signer=signer)

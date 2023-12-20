@@ -18,21 +18,14 @@ def read_key_from_vault(key_ocid):
 
 def jwt_signature(raw_data, private_key_ocid):
     private_key_bytes = read_key_from_vault(private_key_ocid)
-    #public_key_bytes = read_key_from_vault(public_key_ocid)
-
     private_key = serialization.load_pem_private_key(
         private_key_bytes,
         password=None,
         backend=default_backend()
     )
-
-
     header = {
         'alg': 'RS256',
         'typ': 'JWT'
     }
-
     jwt_token = jwt.encode(raw_data, private_key, algorithm='RS256', headers=header)
-
-    print(f"\nDigitally Signed JWT: {jwt_token}")
     return jwt_token
