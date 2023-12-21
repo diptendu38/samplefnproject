@@ -19,11 +19,10 @@ def handler(ctx, data: io.BytesIO=None):
     logging.getLogger().info("function start")
 
     client_private_key_ocid = client_public_key_ocid = server_public_key_ocid = server_private_key_ocid = ""
-    logging.getLogger().info("Request Body " + data)
 
     try:
         body = json.loads(data.getvalue())
-        #logging.getLogger().info("Request Body " + body)
+        logging.getLogger().info("Request Body " + str(body))
         cfg = dict(ctx.Config())
         client_private_key_ocid = cfg["client_private_key_ocid"]
         logging.getLogger().info("Client Private Key OCID = " + client_private_key_ocid)
@@ -72,7 +71,7 @@ def handler(ctx, data: io.BytesIO=None):
         json_response = {"error": "Status 500 - Internal Server Error"}
          
     logging.getLogger().info("function end")
-    logging.getLogger().info("Response Payload" + json_response)
+    logging.getLogger().info("Response Payload %s" , json_response)
 
     return response.Response(
         ctx, 
