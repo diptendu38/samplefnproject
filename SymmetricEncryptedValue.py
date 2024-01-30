@@ -41,7 +41,7 @@ def symmetrickeyEncryption(data, public_key_ocid):
 
     data_bytes = data.encode('utf-8')
 
-    if bank_public_key is not None:
+    if public_key is not None:
         encrypted_data = encrypt_with_public_key(data_bytes, public_key)
 
         if encrypted_data is not None:
