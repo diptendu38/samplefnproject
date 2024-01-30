@@ -9,7 +9,6 @@ import oci
 
 class Decryptor:
     
-    @staticmethod
     def decrypt(encrypted_value, key):
         try:
             ivector = encrypted_value[:16]  # Fix: Correct variable name
@@ -24,7 +23,6 @@ class Decryptor:
             print(f"Exception occurred during AES decryption: {exp}")
             return None
 
-    @staticmethod
     def read_key_from_vault(key_ocid):
         signer = oci.auth.signers.get_resource_principals_signer()
         try:
@@ -49,12 +47,6 @@ class Decryptor:
             public_key_bytes,
             backend=default_backend()
         )  
-
-        print("Public Key Contents:")
-        print(public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-        ).decode('utf-8'))
 
         try:
             decoded_payload = jwt.decode(decrypted_jws_token_bytes, public_key, algorithms=['RS256'])
