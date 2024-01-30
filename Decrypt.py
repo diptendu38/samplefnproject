@@ -29,13 +29,12 @@ class Decryptor:
         signer = oci.auth.signers.get_resource_principals_signer()
         try:
             client = oci.secrets.SecretsClient({}, signer=signer)
-            cert_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content
-            cert_bytes = base64.b64decode(cert_content)
-            public_key = RSA.import_key(cert_bytes)
-            return public_key
+            key_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content.encode('utf-8')
+            key_bytes = base64.b64decode(key_content)
         except Exception as ex:
-            print("ERROR: failed to retrieve the certificate from the vault - {}".format(ex))
+            print("ERROR: failed to retrieve the key from the vault", ex)
             raise
+        return key_bytes
 
     def generate_response_signature_decrypted_value(self,symmetric_key_value,request_signature_encrypted_value,public_key_ocid):
         decrypted_jws_token_bytes  = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value), symmetric_key_value.encode())
@@ -45,7 +44,10 @@ class Decryptor:
         else:
             print("Decryption failed.")
 
-        public_key = Decryptor.read_key_from_vault(public_key_ocid)
+        public_key_bytes = Decryptor.read_key_from_vault(public_key_ocid)
+        public_key = serialization.load_pem_public_key(
+        public_key_bytes,
+        backend=default_backend()
         
         try:
             decoded_payload = jwt.decode(decrypted_jws_token_bytes, public_key, algorithms=['RS256'])
