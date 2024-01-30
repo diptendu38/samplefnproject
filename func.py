@@ -49,7 +49,7 @@ def handler(ctx, data: io.BytesIO=None):
 
         request_signature_encrypted_value_obj = Encrypt.RequestSignatureEncryptedValue()
         signature_encrypted_value, symmetric_key = request_signature_encrypted_value_obj.generate_request_signature_encrypted_value(jwt_token)
-        symmetric_key_encrypted_value = SymmetricEncryptedValue.symmetrickeyEncryption(symmetric_key,server_public_key_ocid)
+        symmetric_key_encrypted_value = SymmetricEncryptedValue.symmetrickeyEncryption(symmetric_key,client_private_key_ocid)
 
         json_response = create_json_payload(
                 signature_encrypted_value,
