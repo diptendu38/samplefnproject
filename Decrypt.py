@@ -38,9 +38,9 @@ class Decryptor:
 
     def generate_response_signature_decrypted_value(self, symmetric_key_value, request_signature_encrypted_value, public_key_ocid):
         decrypted_jws_token_bytes = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value.encode()), symmetric_key_value.encode())
-        print("Decrypted JWS Token Bytes:", decrypted_jws_token_bytes)
+        #print("Decrypted JWS Token Bytes:", decrypted_jws_token_bytes)
         if decrypted_jws_token_bytes is not None:
-            logging.getLogger().info("JWS Token " + decrypted_jws_token_bytes.decode('utf-8'))
+            logging.getLogger().info("JWS Token bytes " + decrypted_jws_token_bytes)
         else:
             print("Decryption failed.")
 
