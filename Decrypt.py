@@ -1,24 +1,26 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 import base64
 import jwt
 import oci
 
 class Decryptor:
     
-    @staticmethod
+   # @staticmethod
     def decrypt(encrypted_value, key):
         try:
-            ivector = encrypted_value[:16]
-            print(f"ivector :{ivector}")
+            ivector = encrypted_data[:16]
             cipher = AES.new(key, AES.MODE_CBC, ivector)
-            decrypted_data = cipher.decrypt(encrypted_value)
-            unpadded_data = decrypted_data.rstrip(b'\0')
-            original_data = unpadded_data[16:]  
-            return original_data.decode('utf-8')
+            decrypted_data = cipher.decrypt(encrypted_data[16:]) 
+            unpadded_data = unpad(decrypted_data, AES.block_size)
+            return unpadded_data.decode('utf-8')
+        except ValueError as ve:
+            print(f"Decryption failed: {ve}")
+            return None
         except Exception as exp:
-            print(f"Exception occurred during decryption: {exp}")
+            print(f"Exception occurred during AES decryption: {exp}")
             return None
 
     def read_key_from_vault(key_ocid):
@@ -33,10 +35,11 @@ class Decryptor:
         return key_bytes
 
     def generate_response_signature_decrypted_value(self,symmetric_key_value,request_signature_encrypted_value,public_key_ocid):
-        decrypted_jws_token_bytes  = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value.encode()), symmetric_key_value.encode())
+        decrypted_jws_token_bytes  = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value), symmetric_key_value.encode())
 
         if decrypted_jws_token_bytes  is not None:
-            decrypted_jws_token = decrypted_jws_token_bytes.encode('utf-8')
+            #    decrypted_jws_token = decrypted_jws_token_bytes.encode('utf-8')
+            print(f"Decrypted JWS Token: {decrypted_jws_token_bytes}")
         else:
             print("Decryption failed.")
 
