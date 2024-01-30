@@ -10,12 +10,12 @@ def read_key_from_vault(key_ocid):
     signer = oci.auth.signers.get_resource_principals_signer()
     try:
         client = oci.secrets.SecretsClient({}, signer=signer)
-        cert_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content
-        cert_bytes = base64.b64decode(cert_content)
-        public_key = RSA.import_key(cert_bytes)
-        return public_key
+        key_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content
+        key_bytes = base64.b64decode(key_content)
+        private_key = RSA.import_key(key_bytes)
+        return private_key
     except Exception as ex:
-        print("ERROR: failed to retrieve the certificate from the vault - {}".format(ex))
+        print("ERROR: failed to retrieve the private key from the vault - {}".format(ex))
         raise
 
 def decrypt_with_private_key(encrypted_data, private_key):
