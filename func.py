@@ -65,7 +65,7 @@ def handler(ctx, data: io.BytesIO=None):
         AES_key = SymmetricDecrypt.key_decryption_logic(GWSymmetricKeyEncryptedValue,client_private_key_ocid)
         logging.getLogger().info("AES Key = " + AES_key)
         response_signature_decrypted_value_obj = Decrypt.Decryptor()
-        json_response = response_signature_decrypted_value_obj.generate_response_signature_decrypted_value(AES_key, ResponseSignatureEncryptedValue,client_public_key_ocid)
+        json_response = response_signature_decrypted_value_obj.generate_response_signature_decrypted_value(AES_key, ResponseSignatureEncryptedValue,server_public_key_ocid)
     else :
         print("Returning status 500")
         json_response = {"error": "Status 500 - Internal Server Error"}
