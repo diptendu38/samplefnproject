@@ -10,12 +10,13 @@ def read_key_from_vault(key_ocid):
     signer = oci.auth.signers.get_resource_principals_signer()
     try:
         client = oci.secrets.SecretsClient({}, signer=signer)
-        key_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content.encode('utf-8')
-        key_bytes = base64.b64decode(key_content)
+        cert_content = client.get_secret_bundle(cert_ocid).data.secret_bundle_content.content
+        cert_bytes = base64.b64decode(cert_content)
+        public_key = RSA.import_key(cert_bytes)
+        return public_key
     except Exception as ex:
-        print("ERROR: failed to retrieve the key from the vault", ex)
+        print("ERROR: failed to retrieve the certificate from the vault - {}".format(ex))
         raise
-    return key_bytes
 
 def encrypt_with_public_key(data, public_key):
         cipher = PKCS1_v1_5.new(public_key)
@@ -35,16 +36,13 @@ def encrypt_with_public_key(data, public_key):
         return encrypted_data
 
 def symmetrickeyEncryption(data, public_key_ocid):
-    public_key_bytes = read_key_from_vault(public_key_ocid)
+    #public_key_bytes = read_key_from_vault(public_key_ocid)
+    public_key = read_key_from_vault(public_key_ocid)
+
     data_bytes = data.encode('utf-8')
 
-    bank_public_key = serialization.load_pem_public_key(
-        public_key_bytes,
-        backend=default_backend()
-    )
-
     if bank_public_key is not None:
-        encrypted_data = encrypt_with_public_key(data_bytes, bank_public_key)
+        encrypted_data = encrypt_with_public_key(data_bytes, public_key)
 
         if encrypted_data is not None:
             encrypted_base64 = base64.b64encode(encrypted_data).decode('utf-8')
@@ -55,7 +53,3 @@ def symmetrickeyEncryption(data, public_key_ocid):
     else:
         print("Public key loading failed.")
         return ''
-
-
-
-
