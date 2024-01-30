@@ -10,7 +10,7 @@ def read_key_from_vault(key_ocid):
     signer = oci.auth.signers.get_resource_principals_signer()
     try:
         client = oci.secrets.SecretsClient({}, signer=signer)
-        cert_content = client.get_secret_bundle(cert_ocid).data.secret_bundle_content.content
+        cert_content = client.get_secret_bundle(key_ocid).data.secret_bundle_content.content
         cert_bytes = base64.b64decode(cert_content)
         public_key = RSA.import_key(cert_bytes)
         return public_key
