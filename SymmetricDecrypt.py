@@ -1,6 +1,8 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5
 import base64
 import oci
 
@@ -17,15 +19,11 @@ def read_key_from_vault(key_ocid):
 
 def decrypt_with_private_key(encrypted_data, private_key):
     try:
-        decrypted_data = private_key.decrypt(
-            base64.b64decode(encrypted_data),
-            padding.OAEP(
-                mgf=padding.MGF1(algorithm=hashes.SHA256()),
-                algorithm=hashes.SHA256(),
-                label=None
-            )
-        )
+        cipher = PKCS1_v1_5.new(private_key)
+        encrypted_bytes = base64.b64decode(encrypted_data)
+        decrypted_data = cipher.decrypt(encrypted_bytes, None)
         return decrypted_data.decode('utf-8')
+        
     except Exception as e:
         print(f"Decryption failed: {str(e)}")
         return None
