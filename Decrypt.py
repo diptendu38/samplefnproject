@@ -43,12 +43,12 @@ class Decryptor:
             print("Decryption failed.")
 
         public_key_bytes = Decryptor.read_key_from_vault(public_key_ocid)
-        public_key = serialization.load_pem_public_key(
+       ''' public_key = serialization.load_pem_public_key(
         public_key_bytes,
         backend=default_backend()
-    )
+    )'''
         try:
-            decoded_payload = jwt.decode(decrypted_jws_token, public_key, algorithms=['RS256'])
+            decoded_payload = jwt.decode(decrypted_jws_token_bytes, public_key, algorithms=['RS256'])
             return(decoded_payload)
         except jwt.ExpiredSignatureError:
             print("JWT has expired.")
