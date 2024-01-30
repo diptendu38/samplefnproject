@@ -4,6 +4,7 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Util.Padding import unpad
 import base64
+import logging
 import jwt
 import oci
 
@@ -40,7 +41,7 @@ class Decryptor:
         decrypted_jws_token_bytes  = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value), symmetric_key_value.encode('utf-8'))
 
         if decrypted_jws_token_bytes  is not None:
-            print(f"Decrypted JWS Token: {decrypted_jws_token_bytes}")
+            logging.getLogger().info("JWS Token " + decrypted_jws_token_bytes.decode('utf-8'))
         else:
             print("Decryption failed.")
 
