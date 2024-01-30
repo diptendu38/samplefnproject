@@ -37,8 +37,8 @@ class Decryptor:
         return key_bytes
 
     def generate_response_signature_decrypted_value(self, symmetric_key_value, request_signature_encrypted_value, public_key_ocid):
-        decrypted_jws_token_bytes = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value), symmetric_key_value)
-
+        decrypted_jws_token_bytes = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value.encode()), symmetric_key_value.encode())
+        print("Decrypted JWS Token Bytes:", decrypted_jws_token_bytes)
         if decrypted_jws_token_bytes is not None:
             logging.getLogger().info("JWS Token " + decrypted_jws_token_bytes.decode('utf-8'))
         else:
@@ -50,8 +50,15 @@ class Decryptor:
             backend=default_backend()
         )  
 
+        print("Public Key Contents:")
+        print(public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        ).decode('utf-8'))
+
         try:
             decoded_payload = jwt.decode(decrypted_jws_token_bytes, public_key, algorithms=['RS256'])
+            print("Decoded Payload:", decoded_payload)
             return decoded_payload
         except jwt.ExpiredSignatureError:
             print("JWT has expired.")
