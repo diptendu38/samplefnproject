@@ -1,7 +1,6 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from Crypto.Cipher import AES
-from Crypto.PublicKey import RSA
 from Crypto.Util.Padding import unpad
 import base64
 import logging
@@ -10,12 +9,12 @@ import oci
 
 class Decryptor:
     
-   # @staticmethod
+    @staticmethod
     def decrypt(encrypted_value, key):
         try:
-            ivector = encrypted_data[:16]
+            ivector = encrypted_value[:16]  # Fix: Correct variable name
             cipher = AES.new(key, AES.MODE_CBC, ivector)
-            decrypted_data = cipher.decrypt(encrypted_data[16:]) 
+            decrypted_data = cipher.decrypt(encrypted_value[16:]) 
             unpadded_data = unpad(decrypted_data, AES.block_size)
             return unpadded_data.decode('utf-8')
         except ValueError as ve:
@@ -25,6 +24,7 @@ class Decryptor:
             print(f"Exception occurred during AES decryption: {exp}")
             return None
 
+    @staticmethod
     def read_key_from_vault(key_ocid):
         signer = oci.auth.signers.get_resource_principals_signer()
         try:
@@ -36,22 +36,23 @@ class Decryptor:
             raise
         return key_bytes
 
-    def generate_response_signature_decrypted_value(self,symmetric_key_value,request_signature_encrypted_value,public_key_ocid):
-        decrypted_jws_token_bytes  = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value), symmetric_key_value.encode())
+    def generate_response_signature_decrypted_value(self, symmetric_key_value, request_signature_encrypted_value, public_key_ocid):
+        decrypted_jws_token_bytes = Decryptor.decrypt(base64.b64decode(request_signature_encrypted_value), symmetric_key_value)
 
-        if decrypted_jws_token_bytes  is not None:
+        if decrypted_jws_token_bytes is not None:
             logging.getLogger().info("JWS Token " + decrypted_jws_token_bytes.decode('utf-8'))
         else:
             print("Decryption failed.")
 
         public_key_bytes = Decryptor.read_key_from_vault(public_key_ocid)
         public_key = serialization.load_pem_public_key(
-        public_key_bytes,
-        backend=default_backend()
-        
+            public_key_bytes,
+            backend=default_backend()
+        )  
+
         try:
             decoded_payload = jwt.decode(decrypted_jws_token_bytes, public_key, algorithms=['RS256'])
-            return(decoded_payload)
+            return decoded_payload
         except jwt.ExpiredSignatureError:
             print("JWT has expired.")
         except jwt.InvalidTokenError as e:
